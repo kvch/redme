@@ -1,0 +1,33 @@
+{{ define "base" }}
+<html>
+    <head>
+        <title>RedMe</title>
+        <link rel="stylesheet" href="/static/bijou.min.css">
+    <style type="text/css">
+body { background-color: #010101; color: #bbb; }
+a:link { color: #3498db; text-decoration: none; }
+a:visited { color: #404040; text-decoration: line-through; }
+hr { border-top: 1px dotted #808080; margin: 1.0rem 0rem;}
+.container-top { margin-top: 5.0rem; }
+.item { background-color: #252525; margin-bottom: 1.0rem; border: 3px solid #181818; padding: 1.0rem; }
+input[type="text"] { width: 100%; padding-right: 20px;}
+.error { background-color: #c0392b; color, border-color: #e74c3c; color: #000; }
+.done { background-color: #27ae60; border-color: #16a085; color: #000; }
+    </style>
+    </head>
+    <body>
+        <div class='navbar fixed'>
+            <div class='container'>
+                <h4 class='pull-left'>RedMe</h4>
+                <ul class='pull-right'>
+                    <li><a href='/refresh'>Refresh</a></li>
+                    <li><a href="/show">Feeds</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container container-top">
+            {{ template "content" . }}
+        </div>
+    </body>
+</html>
+{{ end }}

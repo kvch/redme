@@ -1,0 +1,49 @@
+{{ define "content" }}
+
+    {{ template "success" . }}
+    {{ template "error" . }}
+
+    <div class="row">
+        <div class="span twelve">
+            <h2>Add new feed</h2>
+        </div>
+    </div>
+    <div class="row">
+        <form action="/add" method="POST">
+            <div class="span one">
+                URL:
+            </div>
+            <div class="span three">
+                <input type="text" name="feed">
+            </div>
+            <div class="span one">
+                Filters: 
+            </div>
+            <div class="span three">
+                <input type="text" name="filters">
+            </div>
+            <div class="span four">
+                <input class="button primary small" type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="span twelve">
+            <h2>Feeds</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span twelve">
+            {{ range .Feeds }}
+                <p>{{ .Feed.Title }} @ {{ .Feed.UpdateURL }}
+                <ul>
+                    {{ range .Filters }}
+                        <li>{{ . }}</li>
+                    {{ end }}
+                </ul>
+            {{ end }}
+            </p>
+        </div>
+    </div>
+{{ end }}

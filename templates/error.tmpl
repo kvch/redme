@@ -1,0 +1,11 @@
+{{ define "error" }}
+    {{ if .Err }}
+    <div class="row">
+        <div class="span twelve">
+            <div class="alert error">
+                {{ .Err }}
+            </div>
+        </div>
+    </div>
+    {{ end }}
+{{ end }}

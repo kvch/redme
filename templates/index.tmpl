@@ -1,0 +1,19 @@
+{{ define "content" }}
+    {{ template "error" . }}
+
+    <div class="row">
+        <div class="span twelve">
+        {{ range .Posts }}
+            <div class="item">
+                <h4><a href="{{ .Link }}">{{ .Title }}</a></h4>
+                {{ noescape .Summary }}
+            </div>
+        {{ end }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="span twelve">
+            <p><a href="/allread"><button class="button primary small">Mark all as read</button></a></p>
+        </div>
+    </div>
+{{ end }}

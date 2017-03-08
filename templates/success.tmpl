@@ -1,0 +1,11 @@
+{{ define "success" }}
+    {{ if .Success }}
+    <div class="row">
+        <div class="span twelve">
+            <div class="alert done">
+                {{ .Success }}
+            </div>
+        </div>
+    </div>
+    {{ end }}
+{{ end }}
