@@ -22,15 +22,17 @@ const (
 	url     TEXT NOT NULL,
 	title   TEXT NOT NULL,
 	summary TEXT,
+	content TEXT,
 	read    INTEGER,
 	FOREIGN KEY(feed) REFERENCES feed(id),
 	UNIQUE (url) ON CONFLICT IGNORE
 	);`
 	sqlNewFeed        = `INSERT INTO feed(url, title, filters) VALUES(?, ?, ?);`
-	sqlNewPost        = `INSERT INTO post(url, title, summary, read, feed) VALUES(?, ?, ?, 0, ?);`
-	sqlGetUnreadPosts = `SELECT post.id, post.url, post.title, post.summary, feed.title FROM post, feed WHERE read = 0 AND feed.id=post.feed;`
-	sqlGetAllFeeds    = `SELECT id, title, url, filters FROM feed;`
-	sqlMarkAllRead    = `UPDATE post SET read = 1 WHERE read = 0 AND id <= ?;`
+	sqlNewPost        = `INSERT INTO post(url, title, summary, content, read, feed) VALUES(?, ?, ?, ?, 0, ?);`
+	sqlGetUnreadPosts = `SELECT post.id, post.url, post.title, post.summary, post.content, feed.title
+	FROM post, feed WHERE read = 0 AND feed.id=post.feed;`
+	sqlGetAllFeeds = `SELECT id, title, url, filters FROM feed;`
+	sqlMarkAllRead = `UPDATE post SET read = 1 WHERE read = 0 AND id <= ?;`
 )
 
 type RedMeFeed struct {
@@ -107,7 +109,7 @@ func (r *RedMeDB) AddFeed(f *RedMeFeed) error {
 func (r *RedMeDB) AddPost(f *RedMeFeed, i *rss.Item) error {
 	var err error
 	if isAddableItem(i, f.Filters) {
-		_, err = r.db.Exec(sqlNewPost, i.Title, i.Link, i.Summary, f.id)
+		_, err = r.db.Exec(sqlNewPost, i.Title, i.Link, i.Summary, i.Content, f.id)
 	}
 
 	return err
@@ -137,7 +139,7 @@ func (r *RedMeDB) GetAllUnreadPosts() ([]*RedMePost, error) {
 	i := new(RedMePost)
 	i.Item = new(rss.Item)
 	for rows.Next() {
-		err = rows.Scan(&i.Id, &i.Item.Title, &i.Item.Link, &i.Item.Summary, &i.FeedTitle)
+		err = rows.Scan(&i.Id, &i.Item.Title, &i.Item.Link, &i.Item.Summary, &i.Item.Content, &i.FeedTitle)
 		if err != nil {
 			return nil, err
 		}

@@ -3,18 +3,25 @@
 
     <div class="row">
         <div class="span twelve">
+            <p class="unread">{{ .NumberOfPosts }} unread items</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span twelve">
         {{ range .Posts }}
             <div class="item">
-                <h4><a href="{{ .Item.Link }}">{{ .Item.Title }}</a></h4>
+                <h2><a href="{{ .Item.Link }}">{{ .Item.Title }}</a><small class="feed">{{ .FeedTitle }}</small></h2>
                 {{ noescape .Item.Summary }}
-                <p><small class="feed">{{ .FeedTitle }}</small></p>
+                {{ noescape .Item.Content }}
             </div>
         {{ end }}
         </div>
     </div>
+    {{ if ne .NumberOfPosts 0 }}
     <div class="row">
         <div class="span twelve">
             <p><a href="/allread?id={{ .LastId }}"><button class="button primary small">Mark all as read</button></a></p>
         </div>
     </div>
+    {{ end }}
 {{ end }}

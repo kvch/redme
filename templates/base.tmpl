@@ -5,23 +5,31 @@
         <link rel="stylesheet" href="/static/bijou.min.css">
     <style type="text/css">
 body { background-color: #010101; color: #bbb; }
+h1, h2, h3, h4, h5 { font-family: Sans-Serif; }
 a:link { color: #3498db; text-decoration: none; }
 a:visited { color: #404040; text-decoration: line-through; }
-hr { border-top: 1px dotted #808080; margin: 1.0rem 0rem;}
+.container{width:800px;margin:0 auto}
 .container-top { margin-top: 5.0rem; }
-.item { background-color: #252525; margin-bottom: 1.0rem; border: 3px solid #181818; padding: 1.0rem; }
+.item { background-color: #252525; margin-bottom: 1.0rem; padding: 1.5rem; }
+.item img { max-width: 600px; height: auto; padding: 10px; }
 input[type="text"] { width: 100%; padding-right: 20px;}
 .error { background-color: #c0392b; color, border-color: #e74c3c; color: #000; }
 .done { background-color: #27ae60; border-color: #16a085; color: #000; }
-.feed {background-color: #34495e; padding: 5px; }
+.feed { background-color: #34495e; padding: 5px; float: right; }
+iframe { max-width: 740px; margin: 0 auto; }
+#topbar { padding: 4px; padding-top: 0px; background-color: #222; }
+#topbar a {color: #888; font-family: Sans-Serif; }
+#topbar .menu { width: 800px; margin: 0 auto; }
+#topbar .menu li { float: left; list-style-type: none; margin-left: 20px; }
+.unread { text-align: right; }
     </style>
     </head>
     <body>
-        <div class='navbar fixed'>
-            <div class='container'>
-                <h4 class='pull-left'>RedMe</h4>
-                <ul class='pull-right'>
-                    <li><a href='/refresh'>Refresh</a></li>
+        <div id="topbar">
+            <div class="menu">
+                <ul>
+                    <li><b><a href="/">RedMe</a></b></li>
+                    <li><a href="/refresh">Refresh</a></li>
                     <li><a href="/show">Feeds</a></li>
                 </ul>
             </div>
