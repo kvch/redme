@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"strings"
 
@@ -21,6 +22,7 @@ type PostsPage struct {
 	Posts   []*model.RedMePost
 	Err     string
 	Success string
+	LastId  int
 }
 
 type FeedsPage struct {
@@ -73,23 +75,33 @@ func initTemplates() {
 
 func ShowUnreadPosts(w http.ResponseWriter, r *http.Request) error {
 	posts, err := db.GetAllUnreadPosts()
+	lastId := 0
+	if len(posts) > 0 {
+		lastId = posts[len(posts)-1].Id
+	}
 	if err != nil {
-		p := &PostsPage{Posts: nil, Success: "", Err: "Error while fetching posts"}
+		p := &PostsPage{Posts: nil, Success: "", Err: "Error while fetching posts", LastId: lastId}
 		return renderTemplate(w, "index.tmpl", p)
 	}
-	p := &PostsPage{Posts: posts, Success: "", Err: ""}
+	p := &PostsPage{Posts: posts, Success: "", Err: "", LastId: lastId}
 	return renderTemplate(w, "index.tmpl", p)
 }
 
 func MarkAllPostsRead(w http.ResponseWriter, r *http.Request) error {
-	err := db.MarkAllPostsRead()
+	values, _ := url.ParseQuery(r.URL.RawQuery)
+	id := values.Get("id")
+	err := db.MarkAllPostsRead(id)
 	if err != nil {
 		posts, _ := db.GetAllUnreadPosts()
-		p := &PostsPage{Posts: posts, Success: "", Err: "Error while marking posts as read"}
+		lastId := 0
+		if len(posts) > 0 {
+			lastId = posts[len(posts)-1].Id
+		}
+		p := &PostsPage{Posts: posts, Success: "", Err: "Error while marking posts as read", LastId: lastId}
 		return renderTemplate(w, "index.tmpl", p)
 	}
 
-	p := &PostsPage{Posts: nil, Success: "", Err: ""}
+	p := &PostsPage{Posts: nil, Success: "", Err: "", LastId: 0}
 	return renderTemplate(w, "index.tmpl", p)
 }
 
@@ -97,7 +109,7 @@ func RefreshFeeds(w http.ResponseWriter, r *http.Request) error {
 	feeds, err := db.GetAllFeeds()
 	if err != nil {
 		log.Println(err)
-		p := &PostsPage{Posts: nil, Success: "", Err: "Error while fetching feeds from db"}
+		p := &PostsPage{Posts: nil, Success: "", Err: "Error while fetching feeds from db", LastId: 0}
 		return renderTemplate(w, "index.tmpl", p)
 	}
 
@@ -106,7 +118,11 @@ func RefreshFeeds(w http.ResponseWriter, r *http.Request) error {
 		if err != nil {
 			log.Println("Error while updating feed", f.Feed.Title, "(", f.Feed.UpdateURL, ")", err.Error())
 			posts, _ := db.GetAllUnreadPosts()
-			p := &PostsPage{Posts: posts, Success: "", Err: "Error while updating feed"}
+			lastId := 0
+			if len(posts) > 0 {
+				lastId = posts[len(posts)-1].Id
+			}
+			p := &PostsPage{Posts: posts, Success: "", Err: "Error while updating feed", LastId: lastId}
 			return renderTemplate(w, "index.tmpl", p)
 		}
 		for _, i := range f.Feed.Items {
@@ -114,7 +130,11 @@ func RefreshFeeds(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 	posts, _ := db.GetAllUnreadPosts()
-	p := &PostsPage{Posts: posts, Success: "", Err: ""}
+	lastId := 0
+	if len(posts) > 0 {
+		lastId = posts[len(posts)-1].Id
+	}
+	p := &PostsPage{Posts: posts, Success: "", Err: "", LastId: lastId}
 	return renderTemplate(w, "index.tmpl", p)
 }
 
