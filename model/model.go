@@ -28,7 +28,7 @@ const (
 	);`
 	sqlNewFeed        = `INSERT INTO feed(url, title, filters) VALUES(?, ?, ?);`
 	sqlNewPost        = `INSERT INTO post(url, title, summary, read, feed) VALUES(?, ?, ?, 0, ?);`
-	sqlGetUnreadPosts = `SELECT url, title, summary FROM post WHERE read = 0;`
+	sqlGetUnreadPosts = `SELECT post.url, post.title, post.summary, feed.title FROM post, feed WHERE read = 0 AND feed.id=post.feed;`
 	sqlGetAllFeeds    = `SELECT id, title, url, filters FROM feed;`
 	sqlMarkAllRead    = `UPDATE post SET read = 1 WHERE read = 0;`
 )
@@ -37,6 +37,11 @@ type RedMeFeed struct {
 	id      int64
 	Filters []string
 	Feed    *rss.Feed
+}
+
+type RedMePost struct {
+	Item      *rss.Item
+	FeedTitle string
 }
 
 func NewRedMeFeed(url string, filters []string) (*RedMeFeed, error) {
@@ -120,22 +125,24 @@ func isAddableItem(i *rss.Item, filters []string) bool {
 	return false
 }
 
-func (r *RedMeDB) GetAllUnreadPosts() ([]*rss.Item, error) {
+func (r *RedMeDB) GetAllUnreadPosts() ([]*RedMePost, error) {
 	rows, err := r.db.Query(sqlGetUnreadPosts)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	l := make([]*rss.Item, 0)
-	i := new(rss.Item)
+	l := make([]*RedMePost, 0)
+	i := new(RedMePost)
+	i.Item = new(rss.Item)
 	for rows.Next() {
-		err = rows.Scan(&i.Title, &i.Link, &i.Summary)
+		err = rows.Scan(&i.Item.Title, &i.Item.Link, &i.Item.Summary, &i.FeedTitle)
 		if err != nil {
 			return nil, err
 		}
 		l = append(l, i)
-		i = new(rss.Item)
+		i = new(RedMePost)
+		i.Item = new(rss.Item)
 	}
 
 	return l, nil

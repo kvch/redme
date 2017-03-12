@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/SlyMarbo/rss"
 	"github.com/kvch/redme/model"
 )
 
@@ -19,7 +18,7 @@ var (
 )
 
 type PostsPage struct {
-	Posts   []*rss.Item
+	Posts   []*model.RedMePost
 	Err     string
 	Success string
 }

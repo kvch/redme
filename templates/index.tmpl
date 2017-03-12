@@ -5,8 +5,9 @@
         <div class="span twelve">
         {{ range .Posts }}
             <div class="item">
-                <h4><a href="{{ .Link }}">{{ .Title }}</a></h4>
-                {{ noescape .Summary }}
+                <h4><a href="{{ .Item.Link }}">{{ .Item.Title }}</a></h4>
+                {{ noescape .Item.Summary }}
+                <p><small class="feed">{{ .FeedTitle }}</small></p>
             </div>
         {{ end }}
         </div>
