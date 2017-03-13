@@ -24,13 +24,14 @@ const (
 	summary TEXT,
 	content TEXT,
 	read    INTEGER,
+	date    DATETIME DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY(feed) REFERENCES feed(id),
 	UNIQUE (url) ON CONFLICT IGNORE
 	);`
 	sqlNewFeed        = `INSERT INTO feed(url, title, filters) VALUES(?, ?, ?);`
 	sqlNewPost        = `INSERT INTO post(url, title, summary, content, read, feed) VALUES(?, ?, ?, ?, 0, ?);`
 	sqlGetUnreadPosts = `SELECT post.id, post.url, post.title, post.summary, post.content, feed.title
-	FROM post, feed WHERE read = 0 AND feed.id=post.feed;`
+	FROM post, feed WHERE read = 0 AND feed.id=post.feed ORDER BY post.date DESC;`
 	sqlGetAllFeeds = `SELECT id, title, url, filters FROM feed;`
 	sqlMarkAllRead = `UPDATE post SET read = 1 WHERE read = 0 AND id <= ?;`
 )
