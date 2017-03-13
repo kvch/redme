@@ -118,25 +118,15 @@ func RefreshFeeds(w http.ResponseWriter, r *http.Request) error {
 		err := f.Feed.Update()
 		if err != nil {
 			log.Println("Error while updating feed", f.Feed.Title, "(", f.Feed.UpdateURL, ")", err.Error())
-			posts, _ := db.GetAllUnreadPosts()
-			lastId := 0
-			if len(posts) > 0 {
-				lastId = posts[len(posts)-1].Id
-			}
-			p := &PostsPage{Posts: posts, NumberOfPosts: len(posts), Success: "", Err: "Error while updating feed", LastId: lastId}
-			return renderTemplate(w, "index.tmpl", p)
+			http.Redirect(w, r, "/", 300)
+			return nil
 		}
 		for _, i := range f.Feed.Items {
 			db.AddPost(f, i)
 		}
 	}
-	posts, _ := db.GetAllUnreadPosts()
-	lastId := 0
-	if len(posts) > 0 {
-		lastId = posts[len(posts)-1].Id
-	}
-	p := &PostsPage{Posts: posts, NumberOfPosts: len(posts), Success: "", Err: "", LastId: lastId}
-	return renderTemplate(w, "index.tmpl", p)
+	http.Redirect(w, r, "/", 300)
+	return nil
 }
 
 func ListFeeds(w http.ResponseWriter, r *http.Request) error {
