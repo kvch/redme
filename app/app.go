@@ -78,7 +78,7 @@ func ShowUnreadPosts(w http.ResponseWriter, r *http.Request) error {
 	posts, err := db.GetAllUnreadPosts()
 	lastId := 0
 	if len(posts) > 0 {
-		lastId = posts[len(posts)-1].Id
+		lastId = posts[0].Id
 	}
 	if err != nil {
 		p := &PostsPage{Posts: nil, NumberOfPosts: 0, Success: "", Err: "Error while fetching posts", LastId: lastId}
@@ -96,7 +96,7 @@ func MarkAllPostsRead(w http.ResponseWriter, r *http.Request) error {
 		posts, _ := db.GetAllUnreadPosts()
 		lastId := 0
 		if len(posts) > 0 {
-			lastId = posts[len(posts)-1].Id
+			lastId = posts[0].Id
 		}
 		p := &PostsPage{Posts: posts, NumberOfPosts: 0, Success: "", Err: "Error while marking posts as read", LastId: lastId}
 		return renderTemplate(w, "index.tmpl", p)
