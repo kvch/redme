@@ -4,23 +4,25 @@
         <title>RedMe</title>
         <link rel="stylesheet" href="/static/bijou.min.css">
     <style type="text/css">
-body { background-color: #010101; color: #bbb; }
+body { background-color: #010101; color: #bbb; margin: 0; padding: 0; }
 h1, h2, h3, h4, h5 { font-family: Sans-Serif; }
 a:link { color: #3498db; text-decoration: none; }
 a:visited { color: #404040; text-decoration: line-through; }
-.container{width:800px;margin:0 auto}
-.container-top { margin-top: 5.0rem; }
-.item { background-color: #252525; margin-bottom: 1.0rem; padding: 1.5rem; }
+.container { width: 800px; margin: 0 auto; }
+.item { background-color: #252525; margin-bottom: 1.0rem; padding: 1.0rem 1.5rem; }
 .item img { max-width: 600px; height: auto; padding: 10px; }
 input[type="text"] { width: 100%; padding-right: 20px;}
 .error { background-color: #c0392b; color, border-color: #e74c3c; color: #000; }
 .done { background-color: #27ae60; border-color: #16a085; color: #000; }
-.feed { background-color: #34495e; padding: 5px; float: right; }
+.feed { background-color: #34495e; padding: 5px; float: right; font-family: Sans-Serif; font-weight: bold; }
+.title { float: left; margin-top: 0px; margin-bottom: 0px; }
+.clearfix { clear: both; }
 iframe { max-width: 740px; margin: 0 auto; }
-#topbar { padding: 4px; padding-top: 0px; background-color: #222; }
-#topbar a {color: #888; font-family: Sans-Serif; }
-#topbar .menu { width: 800px; margin: 0 auto; }
-#topbar .menu li { float: left; list-style-type: none; margin-left: 20px; }
+#topbar { padding: 5px; background-color: #222; }
+#topbar a {color: #eee; font-family: Sans-Serif; }
+#topbar .menu { width: 800px; padding-top: 0; margin: 0 auto; border: 1px #222 solid; }
+#topbar .menu ul { margin-top: 0; padding-top: 0;}
+#topbar .menu li { list-style-type: none; margin-right: 20px; margin-top: 0;}
 .unread { text-align: right; }
     </style>
     </head>
@@ -28,13 +30,13 @@ iframe { max-width: 740px; margin: 0 auto; }
         <div id="topbar">
             <div class="menu">
                 <ul>
-                    <li><b><a href="/">RedMe</a></b></li>
-                    <li><a href="/refresh">Refresh</a></li>
-                    <li><a href="/show">Feeds</a></li>
+                    <li style="float: left;"><b><a href="/">RedMe</a></b></li>
+                    <li style="float: right;"><a href="/refresh">Refresh</a></li>
+                    <li style="float: right;"><a href="/show">Feeds</a></li>
                 </ul>
             </div>
         </div>
-        <div class="container container-top">
+        <div class="container">
             {{ template "content" . }}
         </div>
     </body>

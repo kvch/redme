@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/SlyMarbo/rss"
 	_ "github.com/mattn/go-sqlite3"
@@ -30,7 +31,7 @@ const (
 	);`
 	sqlNewFeed        = `INSERT INTO feed(url, title, filters) VALUES(?, ?, ?);`
 	sqlNewPost        = `INSERT INTO post(url, title, summary, content, read, feed) VALUES(?, ?, ?, ?, 0, ?);`
-	sqlGetUnreadPosts = `SELECT post.id, post.url, post.title, post.summary, post.content, feed.title
+	sqlGetUnreadPosts = `SELECT post.id, post.url, post.title, post.summary, post.content, post.date, feed.title
 	FROM post, feed WHERE read = 0 AND feed.id=post.feed ORDER BY post.date DESC;`
 	sqlGetAllFeeds = `SELECT id, title, url, filters FROM feed;`
 	sqlMarkAllRead = `UPDATE post SET read = 1 WHERE read = 0 AND id <= ?;`
@@ -46,6 +47,7 @@ type RedMePost struct {
 	Id        int
 	Item      *rss.Item
 	FeedTitle string
+	Date      string
 }
 
 func NewRedMeFeed(url string, filters []string) (*RedMeFeed, error) {
@@ -138,15 +140,18 @@ func (r *RedMeDB) GetAllUnreadPosts() ([]*RedMePost, error) {
 
 	l := make([]*RedMePost, 0)
 	i := new(RedMePost)
+	d := new(time.Time)
 	i.Item = new(rss.Item)
 	for rows.Next() {
-		err = rows.Scan(&i.Id, &i.Item.Title, &i.Item.Link, &i.Item.Summary, &i.Item.Content, &i.FeedTitle)
+		err = rows.Scan(&i.Id, &i.Item.Title, &i.Item.Link, &i.Item.Summary, &i.Item.Content, &d, &i.FeedTitle)
 		if err != nil {
 			return nil, err
 		}
+		i.Date = d.Format("2006 Jan 2 15:04")
 		l = append(l, i)
 		i = new(RedMePost)
 		i.Item = new(rss.Item)
+		d = new(time.Time)
 	}
 
 	return l, nil

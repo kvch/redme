@@ -10,9 +10,14 @@
         <div class="span twelve">
         {{ range .Posts }}
             <div class="item">
-                <h2><a href="{{ .Item.Link }}">{{ .Item.Title }}</a><small class="feed">{{ .FeedTitle }}</small></h2>
-                {{ noescape .Item.Summary }}
+                <h2 class="title"><a href="{{ .Item.Link }}">{{ .Item.Title }}</a></h2>
+                <p><small class="feed">{{ .FeedTitle }}</small></p>
+                <p class="clearfix"><small>{{ .Date }}</small></p>
+                {{ if .Item.Content }}
                 {{ noescape .Item.Content }}
+                {{ else }}
+                {{ noescape .Item.Summary }}
+                {{ end }}
             </div>
         {{ end }}
         </div>
