@@ -131,7 +131,8 @@ func RefreshFeeds(w http.ResponseWriter, r *http.Request) error {
 			db.AddPost(f, i)
 		}
 	}
-	http.Redirect(w, r, "/", 300)
+	w.Header().Set("Cache-Control", "no-cache")
+	http.Redirect(w, r, "/", 302)
 	return nil
 }
 
