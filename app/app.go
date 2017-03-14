@@ -76,10 +76,7 @@ func initTemplates() {
 
 func ShowUnreadPosts(w http.ResponseWriter, r *http.Request) error {
 	posts, err := db.GetAllUnreadPosts()
-	lastId := 0
-	if len(posts) > 0 {
-		lastId = posts[0].Id
-	}
+	lastId := getLastId(posts)
 	if err != nil {
 		p := &PostsPage{Posts: nil, NumberOfPosts: 0, Success: "", Err: "Error while fetching posts", LastId: lastId}
 		return renderTemplate(w, "index.tmpl", p)
@@ -94,16 +91,25 @@ func MarkAllPostsRead(w http.ResponseWriter, r *http.Request) error {
 	err := db.MarkAllPostsRead(id)
 	if err != nil {
 		posts, _ := db.GetAllUnreadPosts()
-		lastId := 0
-		if len(posts) > 0 {
-			lastId = posts[0].Id
-		}
+		lastId := getLastId(posts)
 		p := &PostsPage{Posts: posts, NumberOfPosts: 0, Success: "", Err: "Error while marking posts as read", LastId: lastId}
 		return renderTemplate(w, "index.tmpl", p)
 	}
 
 	p := &PostsPage{Posts: nil, NumberOfPosts: 0, Success: "", Err: "", LastId: 0}
 	return renderTemplate(w, "index.tmpl", p)
+}
+
+func getLastId(posts []*model.RedMePost) int {
+	lastId := 0
+	if len(posts) > 0 {
+		for _, p := range posts {
+			if lastId < p.Id {
+				lastId = p.Id
+			}
+		}
+	}
+	return lastId
 }
 
 func RefreshFeeds(w http.ResponseWriter, r *http.Request) error {
