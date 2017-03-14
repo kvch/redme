@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/SlyMarbo/rss"
@@ -63,6 +64,7 @@ func NewRedMeFeed(url string, filters []string) (*RedMeFeed, error) {
 }
 
 type RedMeDB struct {
+	sync.RWMutex
 	db *sql.DB
 }
 
@@ -96,6 +98,8 @@ func (r *RedMeDB) AddFeed(f *RedMeFeed) error {
 		filters = strings.Join(f.Filters, ",")
 	}
 
+	r.Lock()
+	defer r.Unlock()
 	res, err := r.db.Exec(sqlNewFeed, f.Feed.UpdateURL, f.Feed.Title, filters)
 	if err != nil {
 		return err
@@ -112,7 +116,9 @@ func (r *RedMeDB) AddFeed(f *RedMeFeed) error {
 func (r *RedMeDB) AddPost(f *RedMeFeed, i *rss.Item) error {
 	var err error
 	if isAddableItem(i, f.Filters) {
+		r.Lock()
 		_, err = r.db.Exec(sqlNewPost, i.Title, i.Link, i.Summary, i.Content, f.id)
+		r.Unlock()
 	}
 
 	return err
@@ -188,6 +194,8 @@ func (r *RedMeDB) GetAllFeeds() ([]*RedMeFeed, error) {
 }
 
 func (r *RedMeDB) MarkAllPostsRead(id string) error {
+	r.Lock()
 	_, err := r.db.Exec(sqlMarkAllRead, id)
+	r.Unlock()
 	return err
 }
