@@ -32,7 +32,7 @@ const (
 	sqlNewFeed        = `INSERT INTO feed(url, title, filters) VALUES(?, ?, ?);`
 	sqlNewPost        = `INSERT INTO post(url, title, summary, content, read, feed) VALUES(?, ?, ?, ?, 0, ?);`
 	sqlGetUnreadPosts = `SELECT post.id, post.url, post.title, post.summary, post.content, post.date, feed.title
-	FROM post, feed WHERE read = 0 AND feed.id=post.feed ORDER BY post.date DESC;`
+	FROM post, feed WHERE read = 0 AND feed.id=post.feed ORDER BY post.date DESC, post.id ASC;`
 	sqlGetAllFeeds = `SELECT id, title, url, filters FROM feed;`
 	sqlMarkAllRead = `UPDATE post SET read = 1 WHERE read = 0 AND id <= ?;`
 )
