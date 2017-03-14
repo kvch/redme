@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/kvch/redme/model"
 )
@@ -114,23 +115,29 @@ func getLastId(posts []*model.RedMePost) int {
 
 func RefreshFeeds(w http.ResponseWriter, r *http.Request) error {
 	feeds, err := db.GetAllFeeds()
+	var wg sync.WaitGroup
 	if err != nil {
 		log.Println(err)
 		p := &PostsPage{Posts: nil, NumberOfPosts: 0, Success: "", Err: "Error while fetching feeds from db", LastId: 0}
 		return renderTemplate(w, "index.tmpl", p)
 	}
 
+	wg.Add(len(feeds))
 	for _, f := range feeds {
-		err := f.Feed.Update()
-		if err != nil {
-			log.Println("Error while updating feed", f.Feed.Title, "(", f.Feed.UpdateURL, ")", err.Error())
-			http.Redirect(w, r, "/", 300)
-			return nil
-		}
-		for _, i := range f.Feed.Items {
-			db.AddPost(f, i)
-		}
+		go func(f *model.RedMeFeed) {
+			defer wg.Done()
+			log.Println("Updating", f.Feed.Title)
+			err := f.Feed.Update()
+			if err != nil {
+				log.Println("Error while updating", f.Feed.Title, err.Error())
+			}
+			for _, i := range f.Feed.Items {
+				db.AddPost(f, i)
+			}
+			log.Println("Update finished", f.Feed.Title)
+		}(f)
 	}
+	wg.Wait()
 	w.Header().Set("Cache-Control", "no-cache")
 	http.Redirect(w, r, "/", 302)
 	return nil
