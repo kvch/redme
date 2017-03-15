@@ -97,8 +97,9 @@ func MarkAllPostsRead(w http.ResponseWriter, r *http.Request) error {
 		return renderTemplate(w, "index.tmpl", p)
 	}
 
-	p := &PostsPage{Posts: nil, NumberOfPosts: 0, Success: "", Err: "", LastId: 0}
-	return renderTemplate(w, "index.tmpl", p)
+	w.Header().Set("Cache-Control", "no-cache")
+	http.Redirect(w, r, "/", 302)
+	return nil
 }
 
 func getLastId(posts []*model.RedMePost) int {
