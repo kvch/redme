@@ -117,7 +117,7 @@ func (r *RedMeDB) AddPost(f *RedMeFeed, i *rss.Item) error {
 	var err error
 	if isAddableItem(i, f.Filters) {
 		r.Lock()
-		_, err = r.db.Exec(sqlNewPost, i.Title, i.Link, i.Summary, i.Content, f.id)
+		_, err = r.db.Exec(sqlNewPost, i.Link, i.Title, i.Summary, i.Content, f.id)
 		r.Unlock()
 	}
 
@@ -149,7 +149,7 @@ func (r *RedMeDB) GetAllUnreadPosts() ([]*RedMePost, error) {
 	d := new(time.Time)
 	i.Item = new(rss.Item)
 	for rows.Next() {
-		err = rows.Scan(&i.Id, &i.Item.Title, &i.Item.Link, &i.Item.Summary, &i.Item.Content, &d, &i.FeedTitle)
+		err = rows.Scan(&i.Id, &i.Item.Link, &i.Item.Title, &i.Item.Summary, &i.Item.Content, &d, &i.FeedTitle)
 		if err != nil {
 			return nil, err
 		}
